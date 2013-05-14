@@ -9,7 +9,7 @@
   margin: 0 auto;
 	padding: 0px;
   padding-top: 0px;
-  background-image: url("../gfx/ohm.png");
+  /* background-image: url("../gfx/ohm.png"); */
   min-height: 100%; /* sets min-height for modern browsers */
   height: auto !important; /* Important rule for modern browsers */
   height: 100%; /* min-height in IE */
