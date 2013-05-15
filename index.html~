@@ -31,7 +31,7 @@
   /* lets begin the actual code */
   function main(){
     
-		var game = new Game("cACATG");
+		var game = new Game("TTATTTATT");
 		game.Init();
 		game.Start();
 
@@ -59,7 +59,7 @@
     <input id="sequence" name="sequence" type="text" /></br>
     <input name="button" type="submit" class="Button" value="Fold!" />
 	</form>
-	<canvas id="mainCanvas" width="300" height="300">Canvas is not supported</canvas>
+	<canvas id="mainCanvas" width="600" height="600">Canvas is not supported</canvas>
 	</div>
 	</div>
 	<span id="printHere"></span>
