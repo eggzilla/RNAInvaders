@@ -77,6 +77,13 @@ function main(){
 		if (typeof seq == 'string' && seq.length){
 			alert('Prepare for Impact');
 			disable_scroll();
+/* tried to change the canvas background color, does not work
+			var canvas = document.getElementById('mainCanvas');
+			var context = canvas.getContext('2d');
+			context.fillStyle = "#C0C0C0";
+			context.fill();
+//			$('#mainCanvas').canvas("background-color","#C0C0C0");
+*/
 			var game = new Game(seq);
 			game.Init();
 			game.Start();
