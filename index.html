@@ -32,6 +32,42 @@ var speed;        /* the speed of the game */
 function main(){
 	$('#Start').click(function(){Start()});
 	function Start() {
+		var keys = [37, 38, 39, 40, 32];
+		function disable_scroll() {
+//			if (window.addEventListener) {
+//				window.addEventListener('DOMMouseScroll', wheel, false);
+//			}
+//			window.onmousewheel = document.onmousewheel = wheel;
+			document.onkeydown = keydown;
+		}
+		
+		function enable_scroll() {
+			if (window.removeEventListener) {
+				window.removeEventListener('DOMMouseScroll', wheel, false);
+			}
+			window.onmousewheel = document.onmousewheel = document.onkeydown = null;  
+		}
+		
+		function preventDefault(e) {
+			e = e || window.event;
+			if (e.preventDefault)
+				e.preventDefault();
+			e.returnValue = false;  
+		}
+		
+		function keydown(e) {
+			for (var i = keys.length; i--;) {
+				if (e.keyCode === keys[i]) {
+					preventDefault(e);
+					return;
+				}
+			}
+		}
+		
+		function wheel(e) {
+			preventDefault(e);
+		}
+		
 		var seq = $('#sequence').val();
 //		alert(seq);
 		$('#Start').disable=true;	
@@ -40,12 +76,15 @@ function main(){
 //		alert('Prepare for Impact');
 		if (typeof seq == 'string' && seq.length){
 			alert('Prepare for Impact');
+			disable_scroll();
 			var game = new Game(seq);
 			game.Init();
 			game.Start();
 		}
 		else{
-			alert('Coward, insert Sequence to face an enemy!'); $("#Start").prop('disabled', false);
+			alert('Coward, insert Sequence to face an enemy!'); 
+			$("#Start").prop('disabled', false);
+			enable_scroll();
 		}
 	}
 }
