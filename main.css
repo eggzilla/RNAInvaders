@@ -2,7 +2,8 @@
 body {
     background-color:#F0FFFF;
     background-repeat:repeat;
-    background-image:url(./graphics/body_background.png);  
+    background-image:url(./graphics/background_full.png);
+    background-position:center;
     margin:30px;
     
 }
