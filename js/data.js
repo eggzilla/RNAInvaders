@@ -220,6 +220,7 @@ function Cannon(g) {
 	var speed_x = 5;
 	var speed_y = 3;
 	var rockets = 1;
+	var shot = rockets.length;
 	var key_left = false;
 	var key_right = false;
 	var key_up = false;
@@ -300,7 +301,7 @@ function Cannon(g) {
 			case 38: key_up = true; break;
 			case 39: key_right = true; break;
 			case 40: key_down = true; break;
-			case 32: Shoot();
+//			case 32: Shoot(shot);
 
 		}
 		return 0;
@@ -317,11 +318,15 @@ function Cannon(g) {
 		return 0;
 	}
 
-	function Shoot() {
+	function Shoot(shots) {
 		// create Rocket
-		rocket = new Rocket(g);
-		rocket.Init(ship.x,ship.y);	
-		g.AddRocket(rocket);	
+		if (shots <= rockets){
+			createjs.Sound.play("rockety", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, 0.2);			
+			rocket = new Rocket(g);
+			rocket.Init(ship.x,ship.y);	
+			g.AddRocket(rocket);	
+//			shots++;
+		}
 	}
 	
 	function HitBy(bonus) {
@@ -422,15 +427,15 @@ function RNA(g) {
 		//TODO
 		//console.log(rocket.X(), x, x+width, rocket.Y(), y, y+height);
 		if (inRange(rocket.X(), x, x+width) && inRange(rocket.Y(), y, y+height)) {
-			hitter++;
-			
+//			hitter++;
+			var newseq = sequence.substring(0, sequence.length-1);
 			// generate bonus maybe?
 			if (Math.floor(Math.random()*10) >= 5) {
 				bonus = new Bonus(g);
 				bonus.Init(rocket.X(), rocket.Y());	
 				g.AddBonus(bonus);	
 			}
-			Init(seq,rocket.X(),rocket.Y());
+			Init(newseq,rocket.X(),rocket.Y());
 			return true;
 			
 		}
@@ -451,12 +456,12 @@ function Game(seq) {
 	var bonuses_ok = [];
 	var bonuses_num = 0;
 	var paused = false;
-
+	var canvas = document.getElementById('mainCanvas');
+	var loadingInterval = 0;
 	// create whole stage (maybe get from before)
 	var stage = new createjs.Stage($("#mainCanvas").get(0));
 	stage.mouseMoveOutside = true; 	
 	
-
 	// functions:
 	this.Init = Init;
 	this.Tick = Tick;
@@ -473,11 +478,27 @@ function Game(seq) {
 	this.KeyReleased = KeyReleased;
 	this.onClick = onClick;
 //	this.onPress = onPress;
-
 	this.cannon = cannon;
 	this.rna = rna;
 	this.add_canvas_background = add_canvas_background;
 // ###### implementation	
+
+	clearInterval(loadingInterval);
+
+    var messageField = new createjs.Text("Loading", "bold 24px Arial", "#C0C0C0");
+    messageField.maxWidth = 1000;
+    messageField.textAlign = "center";
+    messageField.x = canvas.width / 2;
+    messageField.y = canvas.height / 2;
+    stage.addChild(messageField);
+    stage.update(); 
+
+	var scoreField = new createjs.Text("0", "bold 12px Arial", "#FFFFFF");
+	scoreField.textAlign = "right";
+	scoreField.x = canvas.width - 10;
+	scoreField.y = 22;
+	scoreField.maxWidth = 1000;
+	
 	function Pause() {
 		if (!paused) {
 			// ticker paused
@@ -490,6 +511,7 @@ function Game(seq) {
 			paused = false;
 		}
 	}
+
 	function add_canvas_background(){
     	background1 = new createjs.Container();
 		background1.name="background";
@@ -513,24 +535,46 @@ function Game(seq) {
     	background3.addChild(background_image3);		    	
     	stage.addChild(background3);
 	}
-	function Init() {
-		// draw background:
-		var canvas_background=add_canvas_background();
 	
-		// initalize objects:
-		cannon.Init();
-		
-		// somehow get the positions for nucleotides (x, y) into posx, posy: //TODO
-		var posx = [];
-		var posy = [];
-		for (var a=0; a<seq.length; a++) {
-			posx.push(a*10);
-			posy.push(0);
+	function Init() {
+		var assetsPath = "assets/";
+        manifest = [
+            {id:"play", src:assetsPath+"Game-Spawn.mp3|" +assetsPath+"Game-Spawn.ogg"},
+			//            {id:"break", src:assetsPath+"Game-Break.mp3|" +assetsPath+"Game-Break.ogg", data:6},
+//            {id:"death", src:assetsPath+"Game-Death.mp3|" +assetsPath+"Game-Death.ogg"},
+            {id:"rockety", src:assetsPath+"Game-Shoot.mp3|" +assetsPath+"Game-Shoot.ogg", data:6},
+//            {id:"music", src:assetsPath+"18-machinae_supremacy-lord_krutors_dominion.mp3|" +assetsPath+"18-machinae_supremacy-lord_krutors_dominion.ogg"}
+        ];
+
+		preload = new createjs.LoadQueue();
+		preload.installPlugin(createjs.Sound);
+		preload.addEventListener("complete", doneLoading);
+		preload.addEventListener("progress", updateLoading);
+		preload.loadManifest(manifest);
+
+		function updateLoading(event) {
+			var progress = event ? event.progress+0.5|0 : 0;
+			messageField.text = "Loading " + progress + "%";
+			stage.update();
 		}
-		rna.Init(seq, posx, posy);
 		
-		// draw them!
-		stage.update();
+		function doneLoading() {
+			stage.removeChild(messageField);
+			stage.update();
+//
+//			messageField.text = "Prepare for InvadRNA";
+//		    stage.addChild(messageField);
+//			stage.update(); //update the stage to show text
+			//awsomemusic
+			createjs.Sound.play("play", createjs.Sound.INTERRUPT_NONE, 0, 0, -1, 0.4);			
+			// start the music
+			// Init()
+			// watchRestart();
+		} 
+		// preload.removeEventListener("complete");
+
+		Start();
+		
 	}
 
 	function Tick() {
@@ -610,7 +654,7 @@ function Game(seq) {
 	
 	function RemRocket() {
 		// remove occurs only each 10 rockets
-		if (rockets_num > 10) {
+		if (rockets_num > 1) {
 			//console.log("remrockets");
 			var removed = 0;
 			// resort the array
@@ -631,7 +675,7 @@ function Game(seq) {
 
 	function RemBonus() {
 		// remove occurs only each 10 bonuses
-		if (bonuses_num > 10) {
+		if (bonuses_num > 1) {
 			//console.log("remrockets");
 			var removed = 0;
 			// resort the array
@@ -656,7 +700,7 @@ function Game(seq) {
 	
 	function RemoveFromStage(drawable) {
 		//console.log(drawable);
-		return stage.removeChild(drawable);
+		stage.removeChild(drawable);
 	}
 
 	function KeyPressed(e) {
@@ -664,7 +708,7 @@ function Game(seq) {
 			// first result some functional keys (for example Pause or smth...)
 			case 19:
 			case 80: Pause(); break;
-
+			case 32: cannon.Shoot(rockets.length); break;
 			// then send rest to Cannon
 			default: 
 				cannon.KeyPressed(e);
@@ -681,7 +725,7 @@ function Game(seq) {
 	function onClick(){
 	//    if (i < rocketnumber){shoot(); i++;} fly=true;
 		//		shoot(); fly=true;
-				cannon.Shoot();
+				cannon.Shoot(rockets.length);
 	}
 
 /*	function onPress(){
@@ -692,6 +736,25 @@ function Game(seq) {
 	}
 */
 	function Start() {
+
+		// draw background:
+		var canvas_background=add_canvas_background();
+	
+		// initalize objects:
+		cannon.Init();
+		
+		// somehow get the positions for nucleotides (x, y) into posx, posy: //TODO
+		var posx = [];
+		var posy = [];
+		for (var a=0; a<seq.length; a++) {
+			posx.push(a*10);
+			posy.push(0);
+		}
+		rna.Init(seq, posx, posy);
+		
+		// draw them!
+		stage.update();
+
 		//ticker
 		createjs.Ticker.setInterval(100);
 		createjs.Ticker.addEventListener("tick", Tick);

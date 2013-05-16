@@ -1,66 +1,130 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	<html>
+	<head>
 	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 	<meta content="utf-8" http-equiv="encoding">
-  <title>RNA invaders - the game</title>
-  <link rel="stylesheet" type="text/css" href="main.css" />
-  <script src="http://code.jquery.com/jquery-latest.js"></script>
-  <script src="js/easeljs-0.6.0.min.js"></script>
-  <script src="js/rna.js" type="text/javascript"></script>
+	<title>RNA invaders - the game</title>
+	<link rel="stylesheet" type="text/css" href="main.css" />
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="js/easeljs-0.6.1.min.js"></script>
+	<script src="js/rna.js" type="text/javascript"></script>
 	<script src="js/data.js" type="text/javascript"></script>
-  <script type="text/javascript">
-  var stage;
-  var helloText;
-  
-  /* the screens */
-  var title_screen; /* title screen */
-  var game_screen;  /* game screen */
-  var end_screen;   /* end screen */
+	<script type="text/javascript">
+	var stage;
 
-  /* game elements */
-  var player;       /* the player's cannon */
-  var rna;          /* the invading rna */
+/* the screens */
+var title_screen; /* title screen */
+var game_screen;  /* game screen */
+var end_screen;   /* end screen */
 
-  /* some other game elements */
-  var score;        /* the players score */
-  var lifes;        /* the number of player's lifes */
-  var shots;        /* the number of player's shots */
-  var speed;        /* the speed of the game */
+/* game elements */
+var player;       /* the player's cannon */
+var rna;          /* the invading rna */
 
-  /* lets begin the actual code */
-  function main(){
+/* some other game elements */
+var score;        /* the players score */
+var lifes;        /* the number of player's lifes */
+var shots;        /* the number of player's shots */
+var speed;        /* the speed of the game */
+
+/* lets begin the actual code */
     
-		var game = new Game("TTATTTATT");
-		game.Init();
-		game.Start();
+function main(){
+	$('#Start').click(function(){Start()});
+	function Start() {
+		var keys = [37, 38, 39, 40, 32];
+		function disable_scroll() {
+//			if (window.addEventListener) {
+//				window.addEventListener('DOMMouseScroll', wheel, false);
+//			}
+//			window.onmousewheel = document.onmousewheel = wheel;
+			document.onkeydown = keydown;
+		}
+		
+		function enable_scroll() {
+			if (window.removeEventListener) {
+				window.removeEventListener('DOMMouseScroll', wheel, false);
+			}
+			window.onmousewheel = document.onmousewheel = document.onkeydown = null;  
+		}
+		
+		function preventDefault(e) {
+			e = e || window.event;
+			if (e.preventDefault)
+				e.preventDefault();
+			e.returnValue = false;  
+		}
+		
+		function keydown(e) {
+			for (var i = keys.length; i--;) {
+				if (e.keyCode === keys[i]) {
+					preventDefault(e);
+					return;
+				}
+			}
+		}
+		
+		function wheel(e) {
+			preventDefault(e);
+		}
+		
+		var seq = $('#sequence').val();
+		$('#Start').hide();	
+//		alert(seq);
+//		$('#Start').disable=true;	
+//		$("#Start").removeAttr('data-disable-with');
+//		$("#Start").prop('disabled', true);
+//		alert('Prepare for Impact');
+		if (typeof seq == 'string' && seq.length){
+			alert('Prepare for hungry RNA');
+			disable_scroll();
+/* tried to change the canvas background color, does not work
+			var canvas = document.getElementById('mainCanvas');
+			var context = canvas.getContext('2d');
+			context.fillStyle = "#C0C0C0";
+			context.fill();
+//			$('#mainCanvas').canvas("background-color","#C0C0C0");
+*/
+			var game = new Game(seq);
+			game.Init();
+			game.Start();
+		}
+		else{
+			alert('Coward, insert Sequence to face an enemy!'); 
+			$("#Start").prop('disabled', false);
+			enable_scroll();
+		}
+	}
+}
 
-  }
-
-  /* start the main() function onload */
-  $(function(){ main();});
+/* start the main() function onload */
+$(function(){ main();});
+//$(function(){ $("#Start").mousedown(main()); });
 
 </script>
 	<style>/* Removes Mobile Highlight */ *{-webkit-tap-highlight-color: rgba(0, 0, 0, 0);}</style>
 	<style>
-#mainCanvas
-    {
-        background-color: #000066;
-        border: solid 1px #0F0;
-    }
-</style>
+	  #button {
+	  position: absolute;
+	  left: 850px;
+	  top: 300px;
+	  }
+	  #mainCanvas
+      {
+      background-color: #F0FFFF;
+      }
+	</style>
 	</head>
 	<body>
-	<div id="maincontainer">
-	
-	<div class="content">
-	<form name="foldingtest" method="post" onsubmit="return fold();" action="">
-    <label>Sequence</label>
-    <input id="sequence" name="sequence" type="text" /></br>
-    <input name="button" type="submit" class="Button" value="Fold!" />
+	<form name="ChooseYourEnemy" method="post" onsubmit="return fold();" action="">
+    <label>InvadRNA</label>
+    <input id="sequence" name="sequence" type="text" ></br>
 	</form>
-	<canvas id="mainCanvas" width="600" height="600">Canvas is not supported</canvas>
+	<div id="button" type="submit" class="Button" value="Fold!">
+	  <a id="Start">Start</a>
 	</div>
+	<div id="maincontainer">
+	<canvas id="mainCanvas" width="600" height="600">Canvas is not supported</canvas>
 	</div>
 	<span id="printHere"></span>
 	</body>

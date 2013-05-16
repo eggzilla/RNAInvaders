@@ -1,0 +1,362 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <title>Ronny Lorenz - home</title>
+  <link rel="stylesheet" type="text/css" href="main.css" />
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <script src="js/easeljs-0.6.0.min.js"></script>
+  <script src="js/rna.js" type="text/javascript"></script>
+  <script type="text/javascript">
+
+  var stage;
+  var helloText;
+  
+  /* the screens */
+  var title_screen; /* title screen */
+  var game_screen;  /* game screen */
+  var end_screen;   /* end screen */
+
+  /* game elements */
+  var player;       /* the player's cannon */
+  var rna;          /* the invading rna */
+  var enemy;
+
+  /* some other game elements */
+  var score;        /* the players score */
+  var lifes;        /* the number of player's lifes */
+  var shots;        /* the number of player's shots */
+  var speed=15;        /* the speed of the game */
+  var speed_rocket=20;
+  var rocket = [];
+  var rocketnumber = 5;
+  var i = 0;
+  var a = rocketnumber-i;
+  var moveUp=false;	
+  var moveDown=false;	
+  var moveRight=false;	
+  var moveLeft=false;
+  var fly=false;
+  var enemy_life=5;
+  var x;
+  var y;
+  var move_right=true;	  
+
+  /*Addition by Joerg*/
+
+  window.addEventListener('keydown', onKeyDown, true);
+  window.addEventListener('click', onClick, true);
+//  window.addEventListener('mouseover', onOver, true);
+//  window.addEventListener('keyup', onKeyUp);
+
+  function onClick(){
+//    if (i < rocketnumber){shoot(); i++;} fly=true;
+    shoot(); i++; fly=true;
+  } 
+
+  function onOver(e){
+    e.onMouseMove = function(ev){
+      e.target.x = ev.stageX-40;
+      e.target.y = ev.stageY-40;
+      crosshair.x = spaceship.x+35;
+      crosshair.y = spaceship.y-480;
+      if (crosshair.y < 0 ) crosshair.y=0;
+//  e.cross.x = ev.stageX-40;
+//  e.cross.y = ev.stageY-150;
+//  if (e.cross.y > 240) e.cross.y = 240;
+//  if (e.cross.y < 0) e.cross.y = 0;
+//  tick();
+    }
+  }
+
+
+
+  function onKeyDown(e) {
+    //if(!e) { var e = window.event; }
+    switch(e.keyCode) {
+// Here you have to press the button to have movement
+	  case 37: spaceship.x -= speed; if(spaceship.x < 0) spaceship.x = 0; crosshair.x = spaceship.x+35; crosshair.y = spaceship.y-480; if (crosshair.y < 0 ) crosshair.y=0;break;
+	  case 39: spaceship.x += speed; if(spaceship.x > 540) spaceship.x = 540; crosshair.x = spaceship.x+35; crosshair.y = spaceship.y-480; if (crosshair.y < 0 ) crosshair.y=0; break;
+	  case 38: if(spaceship.y - speed > 0) spaceship.y -= speed; crosshair.x = spaceship.x+35; crosshair.y = spaceship.y-480; if (crosshair.y < 0 ) crosshair.y=0; break;
+      case 40: if(spaceship.y + speed < 540) spaceship.y += speed; crosshair.x = spaceship.x+35; crosshair.y = spaceship.y-480; if (crosshair.y < 0 ) crosshair.y=0; break;
+//      case 32: if (i < rocketnumber){shoot(); i++;} fly=true; break;
+      case 32: shoot(); i++; fly=true; break;
+        
+
+//        case mouseover: shoot(); i++; fly = true; break;
+/* Change back if you want continous movement, also uncomment on function tick 
+            case 37: moveLeft = true; moveRight = false;
+            break;
+
+            case 38: moveUp = true; moveLeft = false;
+            break;
+
+            case 39: moveRight = true; moveLeft = false;
+            break;
+
+            case 40: moveDown = true; moveUp = false;
+            break;       
+*/
+    }
+}
+
+/*
+function onKeyUp(e) {
+        moveLeft = false;
+        moveUp = false;
+        moveRight = false;
+        moveDown = false;
+}
+*/
+
+  function checkMovement() {
+    if(moveLeft){
+      spaceship.x -= speed;
+      if(spaceship.x < 0) spaceship.x = 0;
+	}
+	else if(moveRight){
+      spaceship.x += speed;
+      if(spaceship.x > 540) spaceship.x = 540;
+    }  
+    if(moveUp){
+      if(spaceship.y - speed > 0) spaceship.y -= speed;
+    }
+    else if(moveDown){
+      if(spaceship.y + speed < 540) spaceship.y += speed;
+	}
+  }
+
+  function shoot() {
+//    alert ("Shooting!");
+//    a=rocketnumber-i;
+    rocket_body = new createjs.Shape();
+    var rocket_body_graphics = rocket_body.graphics;
+    scaling_factor=5;
+    rocket_body_width = 1*scaling_factor;
+    rocket_body_height = 2*scaling_factor ;
+    rocket_body_graphics.beginFill("#3300CC");
+    rocket_body_graphics.drawRect(0,0,rocket_body_width,rocket_body_height);
+    rocket[i]=new createjs.Container();
+    rocket[i].addChild(rocket_body);
+    rocket[i].x = spaceship.x+45;
+    rocket[i].y = spaceship.y-30;
+//	rocket.y=200;
+    stage.addChild(rocket[i]);
+//    alert ("Shooting!"+i+rocket[i]);
+//    a++;
+  }
+
+  function fire() {
+    if(fly){
+	  for (var x=0; x < i; x++){
+//      alert ("Checking!"+x+rocket[x]);
+		rocket[x].y -= speed_rocket;
+		if (rocket[x].y<10){
+          stage.removeChild(rocket[x]);
+//        rocket[x];
+//		  i++;
+//        a = x;
+        }
+	    if (enemy.x+20 < rocket[x].x < enemy.x-20 && rocket[x].y == enemy.y) {enemy_life--; stage.removeChild(rocket[x]);}
+      }
+    }
+  }
+
+
+  /*END Addition by Joerg*/
+
+  function tick(){
+    if(enemy.x >540){
+      enemy.x = 540;
+      move_right=false;
+    }  
+    else if (enemy.x < 0){
+      enemy.x = 0;
+      move_right=true;		    
+    }			    
+    if(move_right){
+      enemy.x += 5;
+    }
+    else{
+      enemy.x -= 5;
+    }
+
+    if(enemy_life <= 0){
+      alert("You destroyed the enemy!");
+      stage.removeChild(enemy);
+      stage.tick();
+      enemy_life=1;
+      enemy.x=601;
+      enemy.y=601;
+    }
+
+    /*Addition by Joerg
+    Uncomment if you want continous movement 
+    checkMovement();
+    */
+	
+    fire();
+    stage.tick();	
+  }
+
+  /* lets begin the actual code */
+  function main(){
+     var canvas = document.getElementById('mainCanvas');
+	 var width = canvas.width;
+  var height = canvas.height;		    
+    /* create the stage and link it to the canvas */
+    stage = new createjs.Stage($("#mainCanvas").get(0));
+    stage.enableMouseOver();
+//    stage.onOver=onOver();
+    /* create the Hello World text */
+    //helloText = new createjs.Text("Hello World", "20px Arial", "#0F0");
+    //helloText.x = 130;
+    //helloText.y = 150;
+    //helloText.rotation = 0;
+  
+    /* additions by egg */
+
+    var ss = new createjs.SpriteSheet({
+				"animations":
+				{
+				    "run": [0, 4]
+					},
+					"images": ["sprites.png"],
+					"frames":
+						{
+							"height": 100,
+							"width":94,
+							"regX": 0,
+							"regY": 0,
+							"count": 5
+						}
+				});
+
+    spaceship = new createjs.BitmapAnimation(ss);
+    spaceship.x = 250
+    spaceship.y = 500;
+    spaceship.gotoAndPlay("run");	
+    stage.addChild(spaceship);
+
+    var se = new createjs.SpriteSheet({
+				"animations":
+				{
+				    "run": [0, 4]
+					},
+					"images": ["sprites.png"],
+					"frames":
+						{
+							"height": 100,
+							"width":94,
+							"regX": 0,
+							"regY": 0,
+							"count": 5
+						}
+				});
+
+    enemy = new createjs.BitmapAnimation(se);
+    enemy.x = 0
+    enemy.y = 50;
+    enemy.gotoAndPlay("run");	
+    stage.addChild(enemy);
+
+    scaling_factor=15;   
+
+/*    
+    //spaceship-body
+    spaceship_body = new createjs.Shape();			    
+    var spaceship_body_graphics = spaceship_body.graphics;
+    spaceship_body_width = 4 * scaling_factor;
+    spaceship_body_height = 1.5  * scaling_factor ;
+    spaceship_body_graphics.beginFill("#3300CC");
+    spaceship_body_graphics.drawRect(0,0,spaceship_body_width,spaceship_body_height);
+    //coordinates within the container are local
+    spaceship_body.y = 40;
+    //spaceship-cockpit
+    spaceship_cockpit = new createjs.Shape();			    
+    var spaceship_cockpit_graphics = spaceship_cockpit.graphics;
+    spaceship_cockpit_width = 4 * scaling_factor;
+    spaceship_cockpit_height = 2  * scaling_factor ;
+    spaceship_cockpit_graphics.beginFill("#787878");
+    spaceship_cockpit_graphics.drawPolyStar(0,0,30,8,0.1,-90);
+    //coordinates within the container are local
+    spaceship_cockpit.y = 40;
+    spaceship_cockpit.x = 30;			    
+    //cannon-barrel
+    spaceship_main_gun = new createjs.Shape();
+    var spaceship_main_gun_graphics = spaceship_main_gun.graphics;
+    spaceship_main_gun_graphics.beginFill("#B8B8B8");
+    spaceship_main_gun_width = 1*scaling_factor;
+    spaceship_main_gun_height = 2*scaling_factor;
+    spaceship_main_gun_graphics.drawRect(22,0,spaceship_main_gun_width,spaceship_main_gun_height);
+    spaceship_main_gun.y = 0;
+    spaceship = new createjs.Container();
+    spaceship.addChild(spaceship_main_gun);
+    spaceship.addChild(spaceship_cockpit);			    
+    spaceship.addChild(spaceship_body);
+*/
+    spaceship.onPress = onOver;
+
+/*
+    //location of the container on the canvas
+    spaceship.x = 120;
+    spaceship.y = 230;
+    stage.addChild(spaceship);
+*/
+    crosshair_up = new createjs.Shape();
+    var crosshair_up_graphics = crosshair_up.graphics;
+    crosshair_up_graphics.beginFill("#B8B8B8");
+    crosshair_up_width = .2*scaling_factor;
+    crosshair_up_height = 1.5*scaling_factor;
+    crosshair_up_graphics.drawRect(0,0,crosshair_up_width,crosshair_up_height);
+
+    crosshair_side = new createjs.Shape();
+    var crosshair_side_graphics = crosshair_side.graphics;
+    crosshair_side_graphics.beginFill("#B8B8B8");
+    crosshair_side_width = 1.5*scaling_factor;
+    crosshair_side_height = .2*scaling_factor;
+    crosshair_side_graphics.drawRect(-10,10,crosshair_side_width,crosshair_side_height);
+
+    crosshair = new createjs.Container();
+    crosshair.addChild(crosshair_up);
+    crosshair.addChild(crosshair_side);
+    crosshair.x = spaceship.x+35;
+    crosshair.y = spaceship.y-480;
+    if (crosshair.y < 0 ) crosshair.y=0;
+
+    stage.addChild(crosshair);
+  
+    /* add the text to the stage */
+    //stage.addChild(helloText);
+    stage.tick();
+    createjs.Ticker.setInterval(100);
+    createjs.Ticker.addListener(window);
+
+  }
+
+  /* start the main() function onload */
+  $(function(){ main();});
+
+  </script>
+  <style>/* Removes Mobile Highlight */ *{-webkit-tap-highlight-color: rgba(0, 0, 0, 0);}</style>
+  <style>
+      #mainCanvas
+      {
+        background-color: #000066;
+        border: solid 1px #0F0;
+      }
+  </style>
+</head>
+<body>
+<div id="maincontainer">
+
+  <div class="content">
+  <form name="foldingtest" method="post" onsubmit="return fold();" action="">
+    <label>Sequence</label>
+    <input id="sequence" name="sequence" type="text" /></br>
+    <input name="button" type="submit" class="Button" value="Fold!" />
+  </form>
+  <canvas id="mainCanvas" width="600" height="600">Canvas is not supported</canvas>
+  </div>
+</div>
+</body>
+</html>
