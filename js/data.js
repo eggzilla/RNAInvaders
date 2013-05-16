@@ -5,6 +5,8 @@
 var width_canvas = 600;
 var height_canvas = 600;
 
+//visualization
+
 var rs = new createjs.SpriteSheet({
 	"animations":
 	{
@@ -470,7 +472,7 @@ function Game(seq) {
 
 	this.cannon = cannon;
 	this.rna = rna;
-	
+	this.add_canvas_background = add_canvas_background;
 // ###### implementation	
 	function Pause() {
 		if (!paused) {
@@ -484,10 +486,32 @@ function Game(seq) {
 			paused = false;
 		}
 	}
-	
+	function add_canvas_background(){
+    		background1 = new createjs.Container();
+		background1.name="background";
+    		background1.x = 0;
+    		background1.y = -600;		    
+    		var background_image1 = new createjs.Bitmap("./graphics/background_canvas.png");
+    		background1.addChild(background_image1);		    	
+    		stage.addChild(background1);
+    		background2 = new createjs.Container();
+    		background2.name="background2";
+    		background2.x = 0;
+    		background2.y = -600;		    
+    		var background_image2 = new createjs.Bitmap("./graphics/background_canvas2.png");
+    		background2.addChild(background_image2);		    	
+    		stage.addChild(background2);
+    		background3 = new createjs.Container();
+    		background3.name="background3";
+    		background3.x = 0;
+    		background3.y = -600;		    
+    		var background_image3 = new createjs.Bitmap("./graphics/background_canvas3.png");
+    		background3.addChild(background_image3);		    	
+    		stage.addChild(background3);
+	}
 	function Init() {
 		// draw background:
-		
+		var canvas_background=add_canvas_background();
 	
 		// initalize objects:
 		cannon.Init();
@@ -549,6 +573,21 @@ function Game(seq) {
 		// do other things
 
 		// update canvas		
+		var background1=stage.getChildByName("background");
+		var background2=stage.getChildByName("background2");
+  		var background3=stage.getChildByName("background3");
+  		if(background1.y > 600){
+			background1.y = -1200;
+  		}
+  		if(background2.y > 600){
+     			background2.y = -1200;
+  		}
+  		if(background3.y > 600){
+     			background3.y = -1200;
+  		}
+  		background1.y +=2;
+  		background2.y +=9;	
+  		background3.y +=14;	
 		stage.update();
 	}
 
