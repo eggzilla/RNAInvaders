@@ -69,10 +69,11 @@ function main(){
 		}
 		
 		var seq = $('#sequence').val();
+		$('#Start').hide();	
 //		alert(seq);
-		$('#Start').disable=true;	
-		$("#Start").removeAttr('data-disable-with');
-		$("#Start").prop('disabled', true);
+//		$('#Start').disable=true;	
+//		$("#Start").removeAttr('data-disable-with');
+//		$("#Start").prop('disabled', true);
 //		alert('Prepare for Impact');
 		if (typeof seq == 'string' && seq.length){
 			alert('Prepare for hungry RNA');
@@ -103,18 +104,25 @@ $(function(){ main();});
 </script>
 	<style>/* Removes Mobile Highlight */ *{-webkit-tap-highlight-color: rgba(0, 0, 0, 0);}</style>
 	<style>
-#mainCanvas
-    {
-        background-color: #F0FFFF;
-    }
-</style>
+	  #button {
+	  position: absolute;
+	  left: 850px;
+	  top: 300px;
+	  }
+	  #mainCanvas
+      {
+      background-color: #F0FFFF;
+      }
+	</style>
 	</head>
 	<body>
 	<form name="ChooseYourEnemy" method="post" onsubmit="return fold();" action="">
     <label>InvadRNA</label>
     <input id="sequence" name="sequence" type="text" ></br>
-	<button id="Start" type="button">Start!</button>
 	</form>
+	<div id="button" type="submit" class="Button" value="Fold!">
+	  <a id="Start">Start</a>
+	</div>
 	<div id="maincontainer">
 	<canvas id="mainCanvas" width="600" height="600">Canvas is not supported</canvas>
 	</div>

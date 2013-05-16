@@ -348,6 +348,7 @@ function RNA(g) {
 	var heightnt = 10;
 	var speed_x = 5;
 	var speed_y = 5;
+	var hitter = 0;
 
 	// sequence
 	var sequence = "";
@@ -381,17 +382,16 @@ function RNA(g) {
 		height = my-y+heightnt;
 		// redraw
 		g.RemoveFromStage(shape);
-		ReDraw();
+		ReDraw(sequence);
 	}
 
-	function Init(seq, positionx, positiony) {		
-	
+	function Init(seq, positionx, positiony) {
+		sequence = seq;
 		ChangeSeq(seq, positionx, positiony);
 		//ReDraw();
 	}
-	function ReDraw() {
-		// this should be modified to draw actual ship
-		// should draw small parts separately, now just draw all, encapsulate drawings of small parts. TODO egg
+	function ReDraw(seq) {
+		//This is used to redraw the RNA after hit by rocket
 		shape = new createjs.Text(sequence, "20px Arial", "#0F0");
 		shape.x = 0;
 		shape.y = 0;
@@ -422,15 +422,18 @@ function RNA(g) {
 		//TODO
 		//console.log(rocket.X(), x, x+width, rocket.Y(), y, y+height);
 		if (inRange(rocket.X(), x, x+width) && inRange(rocket.Y(), y, y+height)) {
+			hitter++;
+			
 			// generate bonus maybe?
 			if (Math.floor(Math.random()*10) >= 5) {
 				bonus = new Bonus(g);
 				bonus.Init(rocket.X(), rocket.Y());	
 				g.AddBonus(bonus);	
 			}
+			Init(seq,rocket.X(),rocket.Y());
 			return true;
+			
 		}
-		
 		return false;
 	}
 }
@@ -452,6 +455,7 @@ function Game(seq) {
 	// create whole stage (maybe get from before)
 	var stage = new createjs.Stage($("#mainCanvas").get(0));
 	stage.mouseMoveOutside = true; 	
+	
 
 	// functions:
 	this.Init = Init;
@@ -487,27 +491,27 @@ function Game(seq) {
 		}
 	}
 	function add_canvas_background(){
-    		background1 = new createjs.Container();
+    	background1 = new createjs.Container();
 		background1.name="background";
-    		background1.x = 0;
-    		background1.y = -600;		    
-    		var background_image1 = new createjs.Bitmap("./graphics/background_canvas.png");
-    		background1.addChild(background_image1);		    	
-    		stage.addChild(background1);
-    		background2 = new createjs.Container();
-    		background2.name="background2";
-    		background2.x = 0;
-    		background2.y = -600;		    
-    		var background_image2 = new createjs.Bitmap("./graphics/background_canvas2.png");
-    		background2.addChild(background_image2);		    	
-    		stage.addChild(background2);
-    		background3 = new createjs.Container();
-    		background3.name="background3";
-    		background3.x = 0;
-    		background3.y = -600;		    
-    		var background_image3 = new createjs.Bitmap("./graphics/background_canvas3.png");
-    		background3.addChild(background_image3);		    	
-    		stage.addChild(background3);
+    	background1.x = 0;
+    	background1.y = -600;		    
+    	var background_image1 = new createjs.Bitmap("./graphics/background_canvas.png");
+    	background1.addChild(background_image1);		    	
+    	stage.addChild(background1);
+    	background2 = new createjs.Container();
+    	background2.name="background2";
+    	background2.x = 0;
+    	background2.y = -600;		    
+    	var background_image2 = new createjs.Bitmap("./graphics/background_canvas2.png");
+    	background2.addChild(background_image2);		    	
+    	stage.addChild(background2);
+    	background3 = new createjs.Container();
+    	background3.name="background3";
+    	background3.x = 0;
+    	background3.y = -600;		    
+    	var background_image3 = new createjs.Bitmap("./graphics/background_canvas3.png");
+    	background3.addChild(background_image3);		    	
+    	stage.addChild(background3);
 	}
 	function Init() {
 		// draw background:
@@ -691,7 +695,7 @@ function Game(seq) {
 		//ticker
 		createjs.Ticker.setInterval(100);
 		createjs.Ticker.addEventListener("tick", Tick);
-
+		
 		// listeners to key press/release
 		window.addEventListener('keydown', KeyPressed, true);
 		window.addEventListener('keyup', KeyReleased, true);
