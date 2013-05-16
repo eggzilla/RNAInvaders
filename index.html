@@ -30,16 +30,23 @@ var speed;        /* the speed of the game */
 /* lets begin the actual code */
     
 function main(){
-	var seq = $('#sequence').val();
-	$('#Start').click(function(){Start(seq)});
-	function Start(seq) {
+	$('#Start').click(function(){Start()});
+	function Start() {
+		var seq = $('#sequence').val();
+//		alert(seq);
 		$('#Start').disable=true;	
 		$("#Start").removeAttr('data-disable-with');
 		$("#Start").prop('disabled', true);
-		alert('Prepare for Impact');
-		var game = new Game(seq);
-		game.Init();
-		game.Start();
+//		alert('Prepare for Impact');
+		if (typeof seq == 'string' && seq.length){
+			alert('Prepare for Impact');
+			var game = new Game(seq);
+			game.Init();
+			game.Start();
+		}
+		else{
+			alert('Coward, insert Sequence to face an enemy!'); $("#Start").prop('disabled', false);
+		}
 	}
 }
 
