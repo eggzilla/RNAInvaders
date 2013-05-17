@@ -1,8 +1,8 @@
-	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-	<html>
-	<head>
-	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-	<meta content="utf-8" http-equiv="encoding">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+      <meta content="utf-8" http-equiv="encoding">
 	<title>RNA invaders - the game</title>
 	<link rel="stylesheet" type="text/css" href="main.css" />
 	<script src="http://code.jquery.com/jquery-latest.js"></script>
@@ -15,28 +15,12 @@
 	<script src="js/rna.js" type="text/javascript"></script>
 	<script src="js/data.js" type="text/javascript"></script>
 	<script type="text/javascript">
-	var stage;
-
-/* the screens */
-var title_screen; /* title screen */
-var game_screen;  /* game screen */
-var end_screen;   /* end screen */
-
-/* game elements */
-var player;       /* the player's cannon */
-var rna;          /* the invading rna */
-
-/* some other game elements */
-var score;        /* the players score */
-var lifes;        /* the number of player's lifes */
-var shots;        /* the number of player's shots */
-var speed;        /* the speed of the game */
 
 /* lets begin the actual code */
-    
+	  
 function main(){
-
-	$('#Start').click(function(){Start()});
+	  
+$('#Start').click(function(){Start()});
 	function Start() {
 		var keys = [37, 38, 39, 40, 32];
 		function disable_scroll() {
@@ -107,31 +91,18 @@ $(function(){ main();});
 //$(function(){ $("#Start").mousedown(main()); });
 
 </script>
-	<style>/* Removes Mobile Highlight */ *{-webkit-tap-highlight-color: rgba(0, 0, 0, 0);}</style>
-	<style>
-	  #button {
-	  position: absolute;
-	  left: 850px;
-	  top: 300px;
-	  }
-	  #mainCanvas
-      {
-      background-color: #F0FFFF;
-      }
-	</style>
-	</head>
-	<body>
+      </head>
+      <body>
 	<form name="ChooseYourEnemy" method="post" onsubmit="return fold();" action="">
-    <label>InvadRNA</label>
-    <input id="sequence" name="sequence" type="text" ></br>
+	  <label>InvadRNA</label>
+	  <input id="sequence" name="sequence" type="text" ></br>
 	</form>
-	<div id="button" type="submit" class="Button" value="Fold!">
-	  <a id="Start">Start</a>
-	</div>
-	<div id="maincontainer">
-	<canvas id="mainCanvas" width="600" height="600">Canvas is not supported</canvas>
-	</div>
-	<span id="printHere"></span>
+	<div id="maincontainer">	
+	    <a style="position:relative; top:5%; left:0%; z-index:2;" id="Start"> <img src="./graphics/logo.png" alt="logo"></a>
+	    <canvas id="mainCanvas" width="600" height="600">Canvas is not supported</canvas>
+	  </div>
+	  <span id="printHere"></span>
 	</body>
-	</html>
-	
+      </html>
+      
+      

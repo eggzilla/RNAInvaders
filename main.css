@@ -1,23 +1,18 @@
 /* specific divs */
-#button {
-	position: absolute;
-	left: 50px;
-	top: 50px;
-}
+
+*{-webkit-tap-highlight-color: rgba(0, 0, 0, 0);}
 
 body {
     background-color:#F0FFFF;
     background-repeat:repeat;
     background-image:url(./graphics/background_full.png);
-    background-position:center;
-    margin:30px;
+    background-position:center top;
     
 }
 #maincontainer { 
     font-family: Lucida Console, Monaco5, monospace;
     font-size:10pt;
     color:#000000;
-    background-color: #ffffff;
     min-width:600px;
     max-width:600px;
     min-height:600px;
@@ -25,12 +20,14 @@ body {
     margin: 0 auto;
     padding: 0px;
     padding-top: 0px;
-    background-color:#F0FFFF;
-    /*background-image:url(./graphics/container_background.png);
     /* min-height: 100%; /* sets min-height for modern browsers */
      /*height: auto !important; /* Important rule for modern browsers */
      /*height: 100%; /* min-height in IE */
      /*overflow: hidden !important; /* hide scrollbar */*/
+}
+
+#mainCanvas{
+    position:absolute; top:45px; left:center; z-index:-1;
 }
 
 .nav{
