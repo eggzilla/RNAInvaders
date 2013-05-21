@@ -93,12 +93,13 @@ $(function(){ main();});
 </script>
       </head>
       <body>
-	<form name="ChooseYourEnemy" method="post" onsubmit="return fold();" action="">
+	  <form name="ChooseYourEnemy" method="post" onsubmit="return fold();" action="">
 	  <label>InvadRNA</label>
 	  <input id="sequence" name="sequence" type="text" ></br>
 	</form>
 	<div id="maincontainer">	
-	    <a style="position:relative; top:5%; left:0%; z-index:2;" id="Start"> <img src="./graphics/logo.png" alt="logo"></a>
+	    <a style="position:relative; top:5%; left:0%;"id="Start">
+	    <img src="./graphics/logo.png" alt="logo"></a>
 	    <canvas id="mainCanvas" width="600" height="600">Canvas is not supported</canvas>
 	  </div>
 	  <span id="printHere"></span>
