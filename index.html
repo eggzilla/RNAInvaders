@@ -1,8 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html>
   <head>
-    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-      <meta content="utf-8" http-equiv="encoding">
+    <meta charset="utf-8">
 	<title>RNA invaders - the game</title>
 	<link rel="stylesheet" type="text/css" href="main.css" />
 	<script src="http://code.jquery.com/jquery-latest.js"></script>
@@ -90,20 +89,21 @@ $('#Start').click(function(){Start()});
 $(function(){ main();});
 //$(function(){ $("#Start").mousedown(main()); });
 
-</script>
-      </head>
-      <body>
-	  <form name="ChooseYourEnemy" method="post" onsubmit="return fold();" action="">
-	  <label>InvadRNA</label>
-	  <input id="sequence" name="sequence" type="text" ></br>
-	</form>
-	<div id="maincontainer">	
-	    <a style="position:relative; top:5%; left:0%;"id="Start">
-	    <img src="./graphics/logo.png" alt="logo"></a>
-	    <canvas id="mainCanvas" width="600" height="600">Canvas is not supported</canvas>
-	  </div>
-	  <span id="printHere"></span>
-	</body>
-      </html>
+	</script>
+    </head>
+    <body>
+      <form name="ChooseYourEnemy" method="post" onsubmit="return fold();" action="">
+	<label style="position:relative; z-index:6;">InvadRNA</label>
+	<input id="sequence" name="sequence" type="text" style="position:relative; z-index:6;"><br>
+      </form>
+      <div id="maincontainer">	
+	<a style="position:relative; top:50px; left:0%;" id="Start">
+	  <img src="./graphics/logo.png" alt="logo" style="">
+	</a>
+	  <canvas id="mainCanvas" width="600" height="600">Canvas is not supported</canvas>
+      </div>
+      <span id="printHere"></span>
+  </body>
+</html>
       
       

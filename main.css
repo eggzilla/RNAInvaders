@@ -3,8 +3,12 @@ body {
     background-image: url("./graphics/background_full.png");
     background-position: center top;
     background-repeat: repeat;
+    margin: 0;
+    padding: 0;
 }
+ 
 #maincontainer {
+
     color: #000000;
     font-family: Lucida Console,Monaco5,monospace;
     font-size: 10pt;
@@ -15,6 +19,7 @@ body {
     min-width: 600px;
     padding: 0;
 }
+
 #mainCanvas {
     position: absolute;
     top: 45px;
