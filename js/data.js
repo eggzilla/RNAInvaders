@@ -565,12 +565,12 @@ function Game(seq) {
 	}
 	
 	function doneLoading() {
-	    stage.removeChild(messageField);
-	    stage.update();
+//	    stage.removeChild(messageField);
+//	    stage.update();
 	    //
-	    //			messageField.text = "Prepare for InvadRNA";
+	    messageField.text = "Prepare for InvadRNA";
 	    //		    stage.addChild(messageField);
-	    //			stage.update(); //update the stage to show text
+	    stage.update(); //update the stage to show text
 	    //awsomemusic
 	    createjs.Sound.play("play", createjs.Sound.INTERRUPT_NONE, 0, 0, -1, 0.4);			
 	    // start the music
