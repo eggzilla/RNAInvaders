@@ -39,6 +39,18 @@ var ss = new createjs.SpriteSheet({
     }
 });
 
+// dummy:
+function get_fold(sequence, x) {
+    var arrx = [];
+    var arry = [];
+    for (var a=0; a<sequence.length; a++) {
+	arrx.push(a*44+25);
+	arry.push(25);
+	//console.log(arrx, arry, arrx.length);
+    }
+    return x?arrx.slice(0):arry.slice(0);
+}
+
 // help functions
 function CLIPx(x, minx, maxx) {
     if (x<minx) return minx;
@@ -60,6 +72,19 @@ function max(a, b) {
 function min(a, b) {
     if (a<b) return a;
     else return b;
+}
+
+function sgn(x) {
+    if (x<0) return -1;
+    else {
+	if (x>0) return 1;
+	else return 0;
+    }
+}
+
+function abs(x) {
+    if (x<0) return -x;
+    else return x;
 }
 
 function inRange(a, b, c) {
@@ -332,7 +357,7 @@ function Cannon(g) {
     function HitBy(bonus) {
 	// test if bonus has hit the cannon
 	//TODO
-	console.log(bonus.X(), x, x+width, bonus.Y(), y, y+height);
+	//	console.log(bonus.X(), x, x+width, bonus.Y(), y, y+height);
 	if (inRange(bonus.X(), x, x+width) && inRange(bonus.Y(), y, y+height)) {
 	    // yeah, we have the bonus!!!
 	    return true;
@@ -351,14 +376,17 @@ function RNA(g) {
     var height = 10;
     var widthnt = 10;
     var heightnt = 10;
+    var radiusnt = 25;
     var speed_x = 5;
     var speed_y = 5;
     var hitter = 0;
 
     // sequence
     var sequence = "";
-    var posx = [];
-    var posy = [];
+    var nts = [];
+
+    //    var posx = [];
+    //    var posy = [];
 
     // empty shape 
     var shape = 0;
@@ -367,56 +395,90 @@ function RNA(g) {
     this.Init = Init;
     this.Tick = Tick;
     this.HitBy = HitBy;
-    this.ChangeSeq = ChangeSeq;
+    this.ChangePos = ChangePos;
+//    this.ChangeSeq = ChangeSeq;
     
-    // ###### implementation	
-    function ChangeSeq(seq, positionx, positiony) {
-	sequence = seq.toUpperCase();
-	posx = positionx;
-	posy = positiony;
+    function Init(seq, posx, posy) {
+	sequence = seq.toUpperCase();		
 	x = posx[0];
 	y = posy[0];
 	var mx=posx[0], my=posy[0];
 	for (var i=0; i<sequence.length; i++) {
 	    x=min(x, posx[i]);
 	    y=min(y, posy[i]);
-	    mx=max(x, posx[i]);
-	    my=max(y, posy[i]);
+	    mx=max(mx, posx[i]);
+	    my=max(my, posy[i]);
+	    //console.log(posx[i], posy[i]);
+	    var nt = new Nucleotide(g);
+	    nt.Init(seq[i], posx[i], posy[i], radiusnt);
+	    nts.push(nt);
 	}
-	width = mx-x+widthnt;
-	height = my-y+heightnt;
+	width = mx-x+2*radiusnt;
+	height = my-y+2*radiusnt;
+	x-=radiusnt;
+	y-=radiusnt;
 	// redraw
-	g.RemoveFromStage(shape);
-	ReDraw(sequence);
+	//g.RemoveFromStage(shape);
     }
 
-    function Init(seq, positionx, positiony) {
-	sequence = seq;
-	ChangeSeq(seq, positionx, positiony);
-	//ReDraw();
-    }
-    function ReDraw(seq) {
-	//This is used to redraw the RNA after hit by rocket
-	shape = new createjs.Text(sequence, "20px Arial", "#0F0");
-	shape.x = 0;
-	shape.y = 0;
-	width = sequence.length*12;
-	height = 10;
-	g.AddToStage(shape);
+    function ChangePos(positionx, positiony) {
+	
+	//console.log(positionx, positiony);
+
+	// first assure same middle of bounding box:
+	var left = positionx[i];
+	var top = positiony[i];
+	var mx=positionx[0], my=positiony[0];
+	for (var i=0; i<positionx.length; i++) {
+	    left=min(left, positionx[i]);
+	    top=min(top, positiony[i]);
+	    mx=max(mx, positionx[i]);
+	    my=max(my, positiony[i]);
+	}
+	// difference between (middle before) and (after)
+	var dx = (x+width/2) - ((left+mx)/2);
+	var dy = (y+height/2) - ((top+my)/2);
+	for (var i=0; i<positionx.length; i++) {
+	    positionx[i]+=dx;
+	    positiony[i]+=dy;
+	}
+
+	//console.log(positionx, positiony, dx, dy);
+	//console.log(x, y, width, height);
+
+	// then change bounding box - can be better!!!
+	x = left-radiusnt+dx;
+	y = top-radiusnt+dy;
+	width = mx-left+2*radiusnt;
+	height = my-top+2*radiusnt;
+
+	//console.log(x, y, width, height);
+
+	// then redistribute the subcoordinates to nucleotides
+	for (var i=0; i<positionx.length; i++) {
+	    nts[i].GoTo(positionx[i], positiony[i]);
+	}
     }
 
     function Tick() {
-	shape.x += speed_x;
+	x += speed_x;
 	//console.log(shape.x);
-	if (shape.x >= width_canvas-width || shape.x <= 0) {
+	var moved = false;
+	if (x >= width_canvas-width || x <= 0) {
+	    
 	    speed_x = -speed_x;
-	    shape.y += speed_y;
+	    y += speed_y;
+	    moved = true;
 	}
-	shape.x = CLIPx(shape.x, 0, width_canvas-width);
-	x = shape.x;
-	y = shape.y;
+
+	for (var i=0; i<nts.length; i++) {
+	    nts[i].Tick(speed_x, moved?speed_y:0);
+	}
+
+	x = CLIPx(x, 0, width_canvas-width);
+
 	//console.log(width_canvas-width);
-	if (shape.y > height_canvas-g.cannon.height || shape.length == 0) {
+	if (y > height_canvas-g.cannon.height) {
 //	    alert("You have been eaten by a hungry RNA!!!");
 	    g.Stop("You have been eaten by a hungry RNA!!!");
 	}
@@ -426,23 +488,214 @@ function RNA(g) {
 	// test if rocket has hit the rna
 	//TODO
 	//console.log(rocket.X(), x, x+width, rocket.Y(), y, y+height);
+	
+	
 	if (inRange(rocket.X(), x, x+width) && inRange(rocket.Y(), y, y+height)) {
+	    //console.log(rocket.X(), x, x+width, rocket.Y(), y, y+height);
 	    //			hitter++;
-	    var newseq = sequence.substring(0, sequence.length-1);
-	    // generate bonus maybe?
-	    if (Math.floor(Math.random()*10) >= 5) {
-		bonus = new Bonus(g);
-		bonus.Init(rocket.X(), rocket.Y());	
-		g.AddBonus(bonus);	
-	    }
-	    if(newseq.length){
-		Init(newseq,rocket.X(),rocket.Y());
-		return true;    
-	    }
-	    else{
-		g.Stop("You won!");
-	    }
+	    var hit = false;
+	    for (var i=0; i<nts.length; i++) {
+		if (nts[i].HitBy(rocket))  {
+		    // maybe generate bonus
+		    if (Math.floor(Math.random()*10) >= 5) {
+			bonus = new Bonus(g);
+			bonus.Init(rocket.X(), rocket.Y());	
+			g.AddBonus(bonus);	
+		    }
+
+		    // remove it
+		    nts[i].Kill();
+		    nts.splice(i, 1);
+		    
+		    // here we should call some refolding function
+		    sequence = sequence.slice(0, i) + sequence.slice(i+1, sequence.length);
+		    if(sequence.length){
+		    //console.log("2", sequence);
+			var px = get_fold(sequence, true);
+			var py = get_fold(sequence, false);
+
+		    // now set the folded stuff
+			console.log(px, py);
+			ChangePos(px, py);
+		    
+		    //console.log(sequence);
+			return true;
+		    }
+		    else{
+			g.Stop("You won!");
+		    }
+		}
+	    }	     
 	}
+	return false;
+    }
+
+    /* OLD VERSION    
+    // ###### implementation	
+    function ChangeSeq(seq, positionx, positiony) {
+    sequence = seq.toUpperCase();
+    posx = positionx;
+    posy = positiony;
+    x = posx[0];
+    y = posy[0];
+    var mx=posx[0], my=posy[0];
+    for (var i=0; i<sequence.length; i++) {
+    x=min(x, posx[i]);
+    y=min(y, posy[i]);
+    mx=max(x, posx[i]);
+    my=max(y, posy[i]);
+    }
+    width = mx-x+widthnt;
+    height = my-y+heightnt;
+    // redraw
+    g.RemoveFromStage(shape);
+    ReDraw(sequence);
+    }
+
+    function Init(seq, positionx, positiony) {
+    sequence = seq;
+    ChangeSeq(seq, positionx, positiony);
+    //ReDraw();
+    }
+    function ReDraw(seq) {
+    //This is used to redraw the RNA after hit by rocket
+    shape = new createjs.Text(sequence, "20px Arial", "#0F0");
+    shape.x = 0;
+    shape.y = 0;
+    width = sequence.length*12;
+    height = 10;
+    g.AddToStage(shape);
+    }
+
+    function Tick() {
+    shape.x += speed_x;
+    //console.log(shape.x);
+    if (shape.x >= width_canvas-width || shape.x <= 0) {
+    speed_x = -speed_x;
+    shape.y += speed_y;
+    }
+    shape.x = CLIPx(shape.x, 0, width_canvas-width);
+    x = shape.x;
+    y = shape.y;
+    //console.log(width_canvas-width);
+    if (shape.y > height_canvas-g.cannon.height || shape.length == 0) {
+    //	    alert("You have been eaten by a hungry RNA!!!");
+    g.Stop("You have been eaten by a hungry RNA!!!");
+    }
+    }
+    
+    function HitBy(rocket) {
+    // test if rocket has hit the rna
+    //TODO
+    //console.log(rocket.X(), x, x+width, rocket.Y(), y, y+height);
+    if (inRange(rocket.X(), x, x+width) && inRange(rocket.Y(), y, y+height)) {
+    //			hitter++;
+    var newseq = sequence.substring(0, sequence.length-1);
+    // generate bonus maybe?
+    if (Math.floor(Math.random()*10) >= 5) {
+    bonus = new Bonus(g);
+    bonus.Init(rocket.X(), rocket.Y());	
+    g.AddBonus(bonus);	
+    }
+    if(newseq.length){
+    Init(newseq,rocket.X(),rocket.Y());
+    return true;    
+    }
+    else{
+    g.Stop("You won!");
+    }
+    }
+    return false;
+    }
+    */
+}
+
+nuclnum = 0;
+function Nucleotide(g) {
+    // ###### header
+    // variables:
+    var radius = 10;
+    var gotox = 0;
+    var gotoy = 0;
+    var speed = 1;
+
+    // just debug
+    var number = nuclnum;
+    nuclnum++;
+
+    // sequence
+    var char = "";
+
+    // empty shape 
+    var shape = new createjs.Container();	
+    
+    // functions:
+    this.Init = Init;
+    this.Tick = Tick;
+    this.HitBy = HitBy;
+    this.Kill = Kill;
+    this.GoTo = GoTo;
+    
+    // ###### implementation	
+    function Init(char_init, x, y, rad) {
+	char = char_init.toLowerCase();
+	radius = rad;
+	// draw
+	
+	var image = new createjs.Bitmap("./graphics/"+char+".svg");
+	shape.addChild(image);
+	shape.x = x-radius;
+	shape.y = y-radius;
+	//console.log(shape.x, shape.y);
+	g.AddToStage(shape);
+    }
+    
+    function Kill() {
+	g.RemoveFromStage(shape);
+    }
+    
+    function GoTo(x, y) {
+	gotox = (x-radius) - shape.x;
+	gotoy = (y-radius) - shape.y;
+    }
+
+    function Tick(speed_x, speed_y) {
+	//console.log("nucl.tick");
+	var tmpx = 0;
+	if (gotox!=0) {
+	    if (abs(gotox)>speed) {
+		tmpx = sgn(gotox)*speed;
+		gotox -= tmpx;		
+		//console.log(number, gotox, tmpx);
+	    } else {
+		tmpx = gotox;
+		gotox = 0;
+	    }
+ 	}
+ 	var tmpy = 0;
+	if (gotoy!=0) {
+	    if (abs(gotoy)>speed) {
+		tmpy = sgn(gotoy)*speed;
+		gotoy -= tmpy;		
+	    } else {
+		tmpy = gotoy;
+		gotoy = 0;
+	    }
+ 	}
+ 	//console.log("nucl.tick", tmpx, tmpy);
+	shape.x += speed_x + tmpx;
+	shape.y += speed_y + tmpy;
+    }
+    
+    function HitBy(rocket) {
+	// test if rocket has hit this nucleodtide
+	// test the circle:
+	var dx = shape.x + radius - rocket.X();
+	var dy = shape.y + radius - rocket.Y();
+	if (dx*dx + dy*dy <= radius*radius) {
+	    return true;
+	}		
+	
 	return false;
     }
 }
@@ -565,8 +818,8 @@ function Game(seq) {
 	}
 	
 	function doneLoading() {
-//	    stage.removeChild(messageField);
-//	    stage.update();
+	    //	    stage.removeChild(messageField);
+	    //	    stage.update();
 	    //
 	    messageField.text = "Prepare for InvadRNA";
 	    //		    stage.addChild(messageField);
@@ -758,10 +1011,10 @@ function Game(seq) {
 	// somehow get the positions for nucleotides (x, y) into posx, posy: //TODO
 	var posx = [];
 	var posy = [];
-	for (var a=0; a<seq.length; a++) {
-	    posx.push(a*10);
-	    posy.push(0);
-	}
+
+	posx = get_fold(seq, true);
+	posy = get_fold(seq, false);
+
 	rna.Init(seq, posx, posy);
 	
 	// draw them!
@@ -776,18 +1029,19 @@ function Game(seq) {
 	window.addEventListener('keyup', KeyReleased, true);
 	window.addEventListener('click', onClick, true);
     };
+
     function Stop(msg) {
 	// opposite of Start()
-//	alert("GameOver");
+	//	alert("GameOver");
 	stage.removeAllChildren();
 	stage.clear();
 	stage.update;
 
 	messageField.text = "GameOver\n" + msg + "\nInsert coin to restart!";
-//	var text = "GameOver, " + msg + ", insert coin to restart!";
-//	messageField.text = "text";
+	//	var text = "GameOver, " + msg + ", insert coin to restart!";
+	//	messageField.text = "text";
 
-//	messageField.text = "GameOver, insert coin to restart!";
+	//	messageField.text = "GameOver, insert coin to restart!";
 	stage.addChild(messageField);
 	stage.update();
 
@@ -797,11 +1051,11 @@ function Game(seq) {
     }
 
     function Print(arr) {
-//	var printer = document.getElementById('printHere');
-//	$("#printHere span").html("HALLO!!!");
+	//	var printer = document.getElementById('printHere');
+	//	$("#printHere span").html("HALLO!!!");
 	var printer = [];
 	printer.push(arr);
-//	$("#printHere span").html(arr);
+	//	$("#printHere span").html(arr);
 	for (var i=0; i<printer.length; i++) {
 	    $("#printHere span").text(printer[i]);
 	}
