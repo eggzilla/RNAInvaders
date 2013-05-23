@@ -1,109 +1,109 @@
-<!DOCTYPE html>
-<html>
-  <head>
+    <!DOCTYPE html>
+    <html>
+    <head>
     <meta charset="utf-8">
-	<title>RNA invaders - the game</title>
-	<link rel="stylesheet" type="text/css" href="main.css" />
-	<script src="http://code.jquery.com/jquery-latest.js"></script>
-	<script src="js/easeljs-0.6.1.min.js"></script>
-	<script src="js/preloadjs-0.3.1.min.js"></script>
-	<script src="js/soundjs-NEXT.min.js"></script>
-	<script src="js/soundjs.flashplugin-NEXT.min.js"></script>
-	<script src="js/soundjs.flashplugin-0.4.1.min.js"></script>
-	<script src="js/soundjs-0.4.1.min.js"></script>
-	<script src="js/rna.js" type="text/javascript"></script>
-	<script src="js/data.js" type="text/javascript"></script>
-	<script type="text/javascript">
+    <title>RNA invaders - the game</title>
+    <link rel="stylesheet" type="text/css" href="main.css" />
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="js/easeljs-0.6.1.min.js"></script>
+    <script src="js/preloadjs-0.3.1.min.js"></script>
+    <script src="js/soundjs-NEXT.min.js"></script>
+    <script src="js/soundjs.flashplugin-NEXT.min.js"></script>
+    <script src="js/soundjs.flashplugin-0.4.1.min.js"></script>
+    <script src="js/soundjs-0.4.1.min.js"></script>
+    <script src="js/rna.js" type="text/javascript"></script>
+    <script src="js/data.js" type="text/javascript"></script>
+    <script type="text/javascript">
 
 /* lets begin the actual code */
-	  
+
 function main(){
-	  
-$('#Start').click(function(){Start()});
-	function Start() {
-		var keys = [37, 38, 39, 40, 32];
-		function disable_scroll() {
-//			if (window.addEventListener) {
-//				window.addEventListener('DOMMouseScroll', wheel, false);
-//			}
-//			window.onmousewheel = document.onmousewheel = wheel;
-			document.onkeydown = keydown;
-		}
-		
-		function enable_scroll() {
-			if (window.removeEventListener) {
-				window.removeEventListener('DOMMouseScroll', wheel, false);
-			}
-			window.onmousewheel = document.onmousewheel = document.onkeydown = null;  
-		}
-		
-		function preventDefault(e) {
-			e = e || window.event;
-			if (e.preventDefault)
-				e.preventDefault();
-			e.returnValue = false;  
-		}
-		
-		function keydown(e) {
-			for (var i = keys.length; i--;) {
-				if (e.keyCode === keys[i]) {
-					preventDefault(e);
-					return;
-				}
-			}
-		}
-		
-		function wheel(e) {
-			preventDefault(e);
-		}
-		
-		var seq = $('#sequence').val();
-		$('#Start').hide();	
-//		alert(seq);
-//		$('#Start').disable=true;	
-//		$("#Start").removeAttr('data-disable-with');
-//		$("#Start").prop('disabled', true);
-//		alert('Prepare for Impact');
-		if (typeof seq == 'string' && seq.length){
-//			alert('Prepare for hungry RNA');
-			disable_scroll();
-/* tried to change the canvas background color, does not work
-			var canvas = document.getElementById('mainCanvas');
-			var context = canvas.getContext('2d');
-			context.fillStyle = "#C0C0C0";
-			context.fill();
-//			$('#mainCanvas').canvas("background-color","#C0C0C0");
-*/
-			var game = new Game(seq);		
-			game.Init();
-		}
-		else{
-			alert('Coward, insert Sequence to face an enemy!'); 
-			$("#Start").prop('disabled', false);
-			enable_scroll();
-		}
+    
+    $('#Start').click(function(){Start()});
+    function Start() {
+	var keys = [37, 38, 39, 40, 32];
+	function disable_scroll() {
+	    //			if (window.addEventListener) {
+	    //				window.addEventListener('DOMMouseScroll', wheel, false);
+	    //			}
+	    //			window.onmousewheel = document.onmousewheel = wheel;
+	    document.onkeydown = keydown;
 	}
+	
+	function enable_scroll() {
+	    if (window.removeEventListener) {
+		window.removeEventListener('DOMMouseScroll', wheel, false);
+	    }
+	    window.onmousewheel = document.onmousewheel = document.onkeydown = null;  
+	}
+	
+	function preventDefault(e) {
+	    e = e || window.event;
+	    if (e.preventDefault)
+		e.preventDefault();
+	    e.returnValue = false;  
+	}
+	
+	function keydown(e) {
+	    for (var i = keys.length; i--;) {
+		if (e.keyCode === keys[i]) {
+		    preventDefault(e);
+		    return;
+		}
+	    }
+	}
+	
+	function wheel(e) {
+	    preventDefault(e);
+	}
+	
+	var seq = $('#sequence').val();
+	//		alert(seq);
+	//		$('#Start').disable=true;	
+	//		$("#Start").removeAttr('data-disable-with');
+	//		$("#Start").prop('disabled', true);
+	//		alert('Prepare for Impact');
+	if (typeof seq == 'string' && seq.length){
+	    //			alert('Prepare for hungry RNA');
+	    $('#Start').hide();	
+	    disable_scroll();
+	    /* tried to change the canvas background color, does not work
+	       var canvas = document.getElementById('mainCanvas');
+	       var context = canvas.getContext('2d');
+	       context.fillStyle = "#C0C0C0";
+	       context.fill();
+	       //			$('#mainCanvas').canvas("background-color","#C0C0C0");
+	       */
+	    var game = new Game(seq);		
+	    game.Init();
+	}
+	else{
+	    alert('Coward, insert Sequence to face an enemy!'); 
+	    $("#Start").prop('disabled', false);
+	    enable_scroll();
+	}
+    }
 }
 
 /* start the main() function onload */
 $(function(){ main();});
 //$(function(){ $("#Start").mousedown(main()); });
 
-	</script>
+</script>
     </head>
     <body>
-      <form name="ChooseYourEnemy" method="post" onsubmit="return fold();">
-	<label style="position:relative; z-index:6;">InvadRNA</label>
-	<input id="sequence" name="sequence" type="text" style="position:relative; z-index:6;"><br>
-      </form>
-      <div id="maincontainer">	
-	<a style="position:relative; top:50px; left:0%;" id="Start">
-	  <img src="./graphics/logo.png" alt="logo" style="position:relative; z-index:6;">
-	</a>
-	  <canvas id="mainCanvas" width="600" height="600">Canvas is not supported</canvas>
-      </div>
-      <span id="printHere"></span>
-  </body>
-</html>
-      
-      
+    <form name="ChooseYourEnemy" method="post" onsubmit="return fold();">
+    <label style="position:relative; z-index:6;">InvadRNA</label>
+    <input id="sequence" name="sequence" type="text" style="position:relative; z-index:6;"><br>
+    </form>
+    <div id="maincontainer">	
+    <a style="position:relative; top:50px; left:0%;" id="Start">
+    <img src="./graphics/logo.png" alt="logo" style="position:relative; z-index:6;">
+    </a>
+    <canvas id="mainCanvas" width="600" height="600">Canvas is not supported</canvas>
+    </div>
+    <span id="printHere"></span>
+    </body>
+    </html>
+    
+
