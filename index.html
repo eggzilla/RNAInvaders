@@ -98,9 +98,14 @@ $(function(){ main();});
       </form>
       <div id="maincontainer">	
 	<a style="position:relative; top:50px; left:0%;" id="Start">
-	  <img src="./graphics/logo.png" alt="logo" style="position:relative; z-index:6;">
+	  <img src="./graphics/logo.png" alt="logo" style="position:absolute; z-index:6;">
 	</a>
-	  <canvas id="mainCanvas" width="600" height="600">Canvas is not supported</canvas>
+	  <canvas id="mainCanvas" width="600" height="600">Canvas is not
+	  supported</canvas>
+	  <img src="./graphics/uppercanvasdelimiter.png" alt="uppercanvasdelimiter"
+	       style="position:relative; left:-2px; top:16px; z-index:8;">
+	  <img src="./graphics/lowercanvasdelimiter.png" alt="lowercanvasdelimiter"
+	       style="position:relative; left:-4px; top:482px; z-index:8;">
       </div>
       <span id="printHere"></span>
   </body>
