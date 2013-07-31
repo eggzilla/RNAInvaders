@@ -70,6 +70,7 @@ ViennaRNA.RNA           = function(sequence){
                                 this.fold       = ViennaRNA.Algorithms.mm;
                                 this.backtrack  = ViennaRNA.Algorithms.mm_bt;
                               }
+                              this.plot = ViennaRNA.Plot.simple_xy_coordinates;
                             };
 
                             this.update();
@@ -93,8 +94,8 @@ ns.make_pair_table      = function(structure){
                             /* returns array representation of structure.
                                 table[i] is 0 if unpaired or j if (i.j) pair.  */
                             var i,j,hx, length;
-                            var stack = new Array();
-                            var table = new Array();
+                            var stack = [];
+                            var table = [];
 
                             length    = structure.length;
                             table[0]  = length;
@@ -106,7 +107,7 @@ ns.make_pair_table      = function(structure){
                               } else if(c == ')'){
                                 j = stack[--hx];
                                 if (hx<0){
-                                  alert(structure + "\nunbalanced brackets in make_pair_table");
+                                  console.log(structure + "\nunbalanced brackets in make_pair_table");
                                 }
                                 table[i]=j;
                                 table[j]=i;
@@ -115,7 +116,7 @@ ns.make_pair_table      = function(structure){
                               }
                             }
                             if (hx!=0) {
-                              alert(structure + "\nunbalanced brackets in make_pair_table");
+                              console.log(structure + "\nunbalanced brackets in make_pair_table");
                             }
                             return table;
                           };
@@ -129,9 +130,9 @@ ns = ViennaRNA.createNS("ViennaRNA.Algorithms");
 ns.mm                   = function(){
                             var n = this.n;
                             /* array init */
-                            this.mm = new Array(n + 1);
+                            this.mm = [];
                             for(var i = 0; i <= n; i++){
-                              this.mm[i] = new Array(n + 1);
+                              this.mm[i] = [];
                               for(var j = i; j <= n; j++)
                                 this.mm[i][j] = 0;
                             }
@@ -184,6 +185,59 @@ ns.mm_bt                = function(i, j){
                               }
                             }
 
-                            alert(i + "," + j + ": backtracking failed!");
+                            console.log(i + "," + j + ": backtracking failed!");
                           };
 
+// Make the namespace that encapsulates the various folding algorithms
+ns = ViennaRNA.createNS("ViennaRNA.Plot");
+
+ns.simple_xy_coordinates  = function(){
+
+                            loop_coords = function(i, j, pt, prev_x, prev_y, n_x, n_y){
+                              /* check the number of elements in the loop */
+                              var stems = 0;
+                              var up = 0;
+                              while(i <= j){
+                                if(i > pt[i]) up++;
+                                else{
+                                  stems++;
+                                  i = pt[i];
+                                }
+                                i++;
+                              }
+
+                              /* map all elements on a circle */
+                              var u = 2*stems + up;
+                              var r = u/(2*Math.PI);
+                              var alpha = (2*Math.PI)/u;
+                              var center_x = prev_x + r*n_x;
+                              var center_y = prev_y + r*n_y;
+                              var initial_rotation = Math.atan(n_y/n_x);
+
+                              console.log(stems + " stems and " + up + " unpaired in loop");
+                              console.log(    u + " circumference "
+                                            + r + " radius "
+                                            + alpha + " delta_degree "
+                                            + center_x + " center_x "
+                                            + center_y + " center_y "
+                                            + initial_rotation + " initit_alpha"
+                                          );
+
+                              if(u == 2){
+                                
+                              
+                              } else {
+                              
+                              
+                              }
+                            };
+
+                            var i,j;
+                            var stems = 0;
+                            var up    = 0;
+                            var pt    = ViennaRNA.Utils.make_pair_table(this.structure);
+                            i = 1; j = pt[0];
+                            console.log(pt);
+
+                            loop_coords(i, j, pt, 0, 0, -1, 0);
+                          };
